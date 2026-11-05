@@ -9,17 +9,20 @@
 | Tables (merge/split, colours, borders, captions), images (upload, resize, align, crop, caption), shapes, charts (bar/line/pie/scatter), KaTeX equations, links, footnotes | Done |
 | TOC, bibliography, figure list and table list (live), citations in 6 styles, BibTeX/RIS import | Done, tested |
 | Review: spell check (browser), AI grammar, rule-based quality checks, comments, track changes, document compare | Done |
-| Export: PDF, DOCX, HTML, Markdown, TXT; print preview | Done, content verified |
+| Export: PDF, DOCX, **ODT**, HTML, Markdown, TXT; print preview | Done, content verified (DOCX/ODT also opened in LibreOffice) |
+| Native Word equations (OMML) and real footnotes at page bottom (DOCX, ODT, PDF) | Done, tested |
+| Background export jobs (Celery + Redis; in-process fallback) and Redis-shared rate limiting | Done, verified with a real worker + Redis |
+| Multiple Pages view (side by side, rendered from the real output) | Done, E2E tested |
+| Similarity check vs. your uploaded sources and workspace reports | Done, tested |
+| Desktop app (Tauri): bundled offline backend, closes cleanly | Built and launched on Linux; Windows installer built by CI workflow |
 | AI: writer/editor/research/analysis, context menu, preview before applying, provider management/test/limits/usage, RAG with citation verification | Done (tested against a mocked provider API; real providers need your key or Ollama) |
 | Offline: local IndexedDB queue + sync engine with conflict resolution | Done, unit and API tested |
 | Templates: 12 categories + Template Designer | Done |
 
-## Known limitations (stated honestly)
-- **Windows installer:** the Tauri config, sidecar entry point and build scripts are included. The installer itself was **not built or tested**, because building it needs Windows plus the Rust/WebView2 toolchain.
-- **Equations** export to DOCX/PDF as LaTeX text, not native Word math (OMML).
-- **Footnotes and endnotes** are numbered automatically but collected in a "Notes" section at the end, not placed at the bottom of each page.
-- **Editor pagination:** a single block taller than a page (e.g. a very long table) overflows in the editor view. The PDF and DOCX engines split it correctly. Multi-column layouts show as a continuous view in the editor.
-- **"Multiple pages" view** is a zoomed-out vertical overview, not side-by-side pages.
-- **Rate limiting** is per process. Use Redis when running several instances. Celery/Redis background jobs are not wired yet: exports are synchronous.
-- **Plagiarism detection** is deliberately not offered, because it needs a dedicated service and a comparison corpus.
-- **ODT export** is not implemented (it was optional).
+## Remaining limitations (stated honestly)
+- **Windows installer**: `.github/workflows/desktop-windows.yml` builds the NSIS `.exe` and MSI on a Windows runner.
+  The same pipeline was built and run here on Linux (.deb). Pushing the repo to GitHub and running that workflow produces the installer.
+  I could not run the Windows build itself in this environment.
+- **Word equations** are generated as standard OMML. LibreOffice's Math module couldn't be installed here, so their *rendering* wasn't visually checked.
+- **Internet plagiarism detection** is not offered. The similarity check compares only with your own sources and reports; a web check needs an external service.
+- **Editor view:** a single block taller than one page overflows in the editor (the PDF/DOCX engines split it properly). Multi-column layouts show as a continuous view.

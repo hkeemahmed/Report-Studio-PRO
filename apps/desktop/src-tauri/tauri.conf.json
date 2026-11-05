@@ -3,13 +3,57 @@
   "productName": "Report Studio PRO",
   "version": "1.0.0",
   "identifier": "com.reportstudio.pro",
-  "build": { "frontendDist": "../../web/dist", "devUrl": "http://localhost:5173",
-             "beforeDevCommand": "npm run dev -w @rsp/web", "beforeBuildCommand": "npm run build -w @rsp/web" },
-  "app": {
-    "windows": [{ "title": "Report Studio PRO", "width": 1440, "height": 900, "minWidth": 1024, "minHeight": 640 }],
-    "security": { "csp": "default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' http://127.0.0.1:8765 http://localhost:11434 https:; frame-src blob:" }
+  "build": {
+    "frontendDist": "../../web/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev -w @rsp/web",
+    "beforeBuildCommand": "npm run build -w @rsp/web"
   },
-  "bundle": { "active": true, "targets": ["nsis", "msi"], "icon": ["icons/icon.png", "icons/icon.ico"],
-              "externalBin": ["binaries/rsp-backend"],
-              "windows": { "nsis": { "languages": ["Arabic", "English"], "displayLanguageSelector": true } } }
+  "app": {
+    "windows": [
+      {
+        "title": "Report Studio PRO",
+        "width": 1440,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 640,
+        "label": "main"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost http://127.0.0.1:8765 http://localhost:8000 https:; frame-src blob:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis",
+      "msi",
+      "deb",
+      "appimage"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "externalBin": [
+      "binaries/rsp-backend"
+    ],
+    "windows": {
+      "nsis": {
+        "languages": [
+          "Arabic",
+          "English"
+        ],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
+    }
+  }
 }

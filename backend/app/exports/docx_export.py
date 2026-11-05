@@ -10,7 +10,16 @@ from docx.oxml.ns import qn
 from docx.shared import Mm, Pt, RGBColor
 
 from ..documents.schema import is_deleted as _deleted, detect_direction, node_text, page_dims_mm
+from docx.opc.constants import RELATIONSHIP_TYPE as RT
+from docx.opc.packuri import PackURI
+from docx.opc.part import Part
+from docx.oxml import parse_xml
+
 from .context import ExportContext, decode_data_uri, split_italic_markers
+from .omml import latex_to_omml
+
+FOOTNOTES_CT = "application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"
+WNS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"'
 
 ALIGN = {"left": WD_ALIGN_PARAGRAPH.LEFT, "right": WD_ALIGN_PARAGRAPH.RIGHT, "center": WD_ALIGN_PARAGRAPH.CENTER,
          "justify": WD_ALIGN_PARAGRAPH.JUSTIFY}
@@ -160,11 +169,13 @@ class DocxExporter:
                 self._text_run(p, self.ctx.cite(n.get("attrs") or {}), [], para_rtl)
             elif t == "footnote":
                 num = self.ctx.add_footnote((n.get("attrs") or {}).get("text", ""))
-                r = self._text_run(p, str(num), [], para_rtl)
-                r.font.superscript = True
+                r = p.add_run()._r
+                rPr = OxmlElement("w:rPr")
+                rPr.append(_el("w:vertAlign", **{"w:val": "superscript"}))
+                r.append(rPr)
+                r.append(_el("w:footnoteReference", **{"w:id": num}))
             elif t == "inlineEquation":
-                r = self._text_run(p, (n.get("attrs") or {}).get("latex", ""), [{"type": "italic"}], False)
-                _font_run(r, "Cambria Math", None, False)
+                self._math(p, (n.get("attrs") or {}).get("latex", ""))
 
     def _text_run(self, p, text, marks, para_rtl):
         link = next((m for m in marks if m.get("type") == "link"), None)
@@ -438,9 +449,7 @@ class DocxExporter:
         elif t == "equation":
             p = container.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            r = p.add_run((n.get("attrs") or {}).get("latex", ""))
-            r.italic = True
-            _font_run(r, "Cambria Math", None, False)
+            self._math(p, (n.get("attrs") or {}).get("latex", ""), block=True)
         elif t == "coverPage":
             self._cover(n)
         elif t == "tableOfContents":
@@ -460,15 +469,43 @@ class DocxExporter:
         elif t == "caption":
             self._caption(container, node_text(n), self.ctx.rtl)
 
+    def _math(self, p, latex: str, block=False):
+        """Native Word equation (OMML); falls back to italic LaTeX text if conversion fails."""
+        try:
+            om = parse_xml(latex_to_omml(latex))
+            if block:
+                para = parse_xml('<m:oMathPara xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"/>')
+                para.append(om)
+                p._p.append(para)
+            else:
+                p._p.append(om)
+        except Exception:
+            r = p.add_run(latex)
+            r.italic = True
+            _font_run(r, "Cambria Math", None, False)
+
+    def _footnotes_part(self):
+        if not self.ctx.footnotes:
+            return
+        notes = [f'<w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote>',
+                 f'<w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>']
+        bidi = "<w:bidi/>" if self.ctx.rtl else ""
+        for i, text in enumerate(self.ctx.footnotes, 1):
+            esc = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            rtl = "<w:rtl/>" if detect_direction(text) == "rtl" or (self.ctx.rtl and not detect_direction(text)) else ""
+            notes.append(f'<w:footnote w:id="{i}"><w:p><w:pPr>{bidi}</w:pPr>'
+                         f'<w:r><w:rPr><w:vertAlign w:val="superscript"/></w:rPr><w:footnoteRef/></w:r>'
+                         f'<w:r><w:rPr>{rtl}<w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr><w:t xml:space="preserve"> {esc}</w:t></w:r></w:p></w:footnote>')
+        xml = f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:footnotes {WNS}>{"".join(notes)}</w:footnotes>'
+        part = Part(PackURI("/word/footnotes.xml"), FOOTNOTES_CT, xml.encode("utf-8"), self.doc.part.package)
+        self.doc.part.relate_to(part, RT.FOOTNOTES)
+
     def render(self) -> bytes:
         self.doc.core_properties.title = self.ctx.title
         self.doc.core_properties.author = self.ctx.metadata.get("author", "")
         for n in self.ctx.content.get("content", []):
             self._block(self.doc, n)
-        if self.ctx.footnotes:
-            self._simple(self.doc, self.ctx.L["notes"], style="Heading 2")
-            for i, f in enumerate(self.ctx.footnotes, 1):
-                self._simple(self.doc, f"{i}. {f}", size=self.base_size - 2)
+        self._footnotes_part()  # real Word footnotes, shown at the bottom of their page
         buf = io.BytesIO()
         self.doc.save(buf)
         return buf.getvalue()

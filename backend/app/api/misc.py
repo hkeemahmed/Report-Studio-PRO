@@ -56,6 +56,18 @@ def review(doc_id: uuid.UUID, user: User = Depends(current_user), db: Session = 
     return review_document(d.content or {}, d.report_type)
 
 
+@router.get("/documents/{doc_id}/similarity")
+def similarity_check(doc_id: uuid.UUID, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    from ..models import Asset
+    from ..services.similarity import similarity
+    d = get_document_checked(db, user, doc_id)
+    corpus = [{"type": "source", "id": str(a.id), "title": a.filename, "text": a.extracted_text or ""}
+              for a in db.query(Asset).filter(Asset.workspace_id == d.workspace_id, Asset.kind == "source")]
+    corpus += [{"type": "report", "id": str(o.id), "title": o.title, "text": o.plain_text or ""}
+               for o in db.query(Document).filter(Document.workspace_id == d.workspace_id, Document.id != d.id).limit(500)]
+    return similarity(d.plain_text or "", corpus)
+
+
 @router.post("/review/compare")
 def compare_any(body: dict, user: User = Depends(current_user)):
     """Compare two arbitrary documents (e.g. current editor content vs an imported file)."""

@@ -78,6 +78,10 @@ def test_pdf_export_arabic_fonts_pages(client, user):
     # page number in footer on body page (cover excluded), header shows title
     assert page2.strip().splitlines()[-1].strip() == "1"
     assert "LeCun, Y., Bengio, Y., & Hinton, G. (2015)." in pdf.pages[2].extract_text()
+    # footnote rendered at the bottom of the page that references it (page 2), not in an end section
+    words = pdf.pages[1].extract_words()
+    note = [w for w in words if "1." in w["text"]]
+    assert note and max(w["top"] for w in note) > pdf.pages[1].height * 0.8
 
 
 def test_pdf_unsaved_content_print_preview(client, user):
@@ -132,3 +136,48 @@ def test_pdf_no_blank_page_from_trailing_empty_paragraph():
     c = {"type": "doc", "content": filler + [{"type": "paragraph"}, {"type": "pageBreak"}, {"type": "bibliography"}]}
     pdf = pdfplumber.open(io.BytesIO(export_pdf(ExportContext("x", c, {}, "ar"))))
     assert all(p.extract_text().strip() for p in pdf.pages), "no empty pages"
+
+
+def test_docx_native_footnotes_and_equations(client, user):
+    h = user["headers"]
+    d = _setup(client, h)
+    r = client.post("/exports/docx", json={"document_id": d["id"]}, headers=h)
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    doc_xml = z.read("word/document.xml").decode()
+    assert 'w:footnoteReference w:id="1"' in doc_xml
+    assert "هامش توضيحي" in z.read("word/footnotes.xml").decode()
+    assert "footnotes.xml" in z.read("word/_rels/document.xml.rels").decode()
+    assert "<m:oMathPara" in doc_xml and "<m:sSup>" in doc_xml  # E = mc^2 as native Word math
+    assert "Notes" not in doc_xml and "الهوامش" not in doc_xml
+
+
+def test_odt_export(client, user):
+    h = user["headers"]
+    d = _setup(client, h)
+    r = client.post("/exports/odt", json={"document_id": d["id"]}, headers=h)
+    assert r.status_code == 200
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    assert z.namelist()[0] == "mimetype" and z.read("mimetype") == b"application/vnd.oasis.opendocument.text"
+    c = z.read("content.xml").decode()
+    assert 'style:writing-mode="rl-tb"' in c and "<table:table " in c and 'table:number-columns-spanned="2"' in c
+    assert '<text:note text:id="ftn1"' in c and "(LeCun et al., 2015)" in c and "شكل 1: مخطط توضيحي" in c
+    assert any(n.startswith("Pictures/") for n in z.namelist())
+    assert "text:page-number" in z.read("styles.xml").decode()
+
+
+def test_background_export_job(client, user):
+    h = user["headers"]
+    d = _setup(client, h)
+    j = client.post("/exports/jobs?fmt=docx", json={"document_id": d["id"]}, headers=h)
+    assert j.status_code == 202
+    st = client.get(f"/exports/jobs/{j.json()['job_id']}", headers=h).json()
+    assert st["status"] == "done" and st["size_bytes"] > 5000  # eager mode (no broker configured)
+    f = client.get(f"/exports/jobs/{j.json()['job_id']}/file", headers=h)
+    assert f.status_code == 200 and Docx(io.BytesIO(f.content)).paragraphs
+
+
+def test_page_thumbnails(client, user):
+    h = user["headers"]
+    d = _setup(client, h)
+    r = client.post("/exports/pages?scale=0.3", json={"document_id": d["id"]}, headers=h).json()
+    assert r["count"] == 3 and len(r["pages"]) == 3 and r["pages"][0].startswith("data:image/png;base64,")

@@ -2,7 +2,10 @@
   "name": "report-studio-pro",
   "private": true,
   "version": "1.0.0",
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm run dev -w @rsp/web",
     "build": "npm run build -w @rsp/web",
@@ -12,5 +15,8 @@
     "test:backend": "cd backend && python -m pytest -q",
     "desktop:dev": "npm run tauri -w @rsp/desktop -- dev",
     "desktop:build": "npm run tauri -w @rsp/desktop -- build"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
   }
 }

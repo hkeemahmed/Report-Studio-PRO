@@ -18,18 +18,15 @@ def create_app(init_db: bool = True) -> FastAPI:
     s = get_settings()
     app = FastAPI(title="Report Studio PRO API", version="1.0.0",
                   description="Backend for Report Studio PRO — reports, editor documents, AI, references, exports, sync.")
-    app.add_middleware(CORSMiddleware, allow_origins=s.cors_origins, allow_credentials=True,
-                       allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Disposition"])
-
     @app.middleware("http")
     async def security_mw(request: Request, call_next):
         ip = request.client.host if request.client else "unknown"
         key = f"ip:{ip}"
         if request.url.path.startswith("/auth/login") or request.url.path.startswith("/auth/register"):
             if not limiter.allow(f"auth:{ip}", 10):
-                return JSONResponse({"detail": "Too many attempts, try again in a minute"}, status_code=429)
-        elif not limiter.allow(key, s.rate_limit_per_minute):
-            return JSONResponse({"detail": "Rate limit exceeded"}, status_code=429)
+                return JSONResponse({"detail": "Too many attempts, try again in a minute"}, status_code=429, headers={"Retry-After": "60"})
+        elif request.method != "OPTIONS" and not limiter.allow(key, s.rate_limit_per_minute):
+            return JSONResponse({"detail": "Rate limit exceeded"}, status_code=429, headers={"Retry-After": "60"})
         resp = await call_next(request)
         resp.headers.setdefault("X-Content-Type-Options", "nosniff")
         resp.headers.setdefault("X-Frame-Options", "DENY")
@@ -47,6 +44,11 @@ def create_app(init_db: bool = True) -> FastAPI:
             raise exc
         log.exception("Unhandled error on %s", request.url.path)
         return JSONResponse({"detail": "Internal server error"}, status_code=500)
+
+    # Added last = outermost: every response (including 429s and errors) carries CORS headers,
+    # so the browser shows the real error instead of a generic network failure.
+    app.add_middleware(CORSMiddleware, allow_origins=s.cors_origins, allow_credentials=True,
+                       allow_methods=["*"], allow_headers=["*"], expose_headers=["Content-Disposition", "Retry-After"])
 
     for r in (auth, workspaces, projects, documents, templates, references, assets, ai, exports, sync, misc):
         app.include_router(r.router)

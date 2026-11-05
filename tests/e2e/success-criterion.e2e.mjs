@@ -5,7 +5,7 @@
  * Usage: node tests/e2e/success-criterion.e2e.mjs [outDir]   (backend :8000 and web :5173 must be running)
  */
 import { createRequire } from "node:module";
-const { chromium } = createRequire(import.meta.url)("playwright");
+const { chromium } = createRequire(import.meta.url)("playwright");  // devDependency (same version as CI browser)
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
@@ -33,6 +33,16 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && !m.text().includes("Failed to load resource") && errors.push(m.text()));
+
+/** wait until pagination has settled (page count unchanged for 1s) before clicking into the document */
+async function waitStableLayout() {
+  let last = "", same = 0;
+  for (let i = 0; i < 40 && same < 4; i++) {
+    const t = await page.getByTestId("page-count").innerText().catch(() => "");
+    same = t && t === last ? same + 1 : 0; last = t;
+    await page.waitForTimeout(250);
+  }
+}
 
 try {
   await page.goto(BASE);
@@ -62,7 +72,7 @@ try {
   await page.getByRole("button", { name: "التالي" }).click();
   await page.getByTestId("wizard-create").click();
   await page.getByTestId("editor").waitFor();
-  await page.waitForTimeout(800);
+  await waitStableLayout();
   log("report created from template and opened in editor");
   const url = page.url();
 
@@ -70,6 +80,7 @@ try {
   const ed = page.getByTestId("editor");
   const intro = ed.locator("h1", { hasText: "المقدمة" });
   await intro.click();
+  await page.waitForTimeout(150); // human-scale pause: let the editor apply the click's selection
   await page.keyboard.press("End");
   await page.keyboard.press("ArrowDown");
   await page.keyboard.type("يشهد العالم تطوراً كبيراً في مجال الذكاء الاصطناعي، حيث تستخدم نماذج مثل GPT-4 في تشخيص الأمراض بدقة تصل إلى 95%.");
@@ -78,6 +89,7 @@ try {
   await ed.locator("p", { hasText: "يشهد العالم" }).click({ clickCount: 3 });
   await page.getByTestId("btn-bold").click();
   await ed.locator("p", { hasText: "Mixed English" }).click();
+  await page.waitForTimeout(150);
   await page.keyboard.press("End");
   log("typed Arabic + mixed English text and applied bold");
 
@@ -92,6 +104,7 @@ try {
 
   // 5. image (cursor back in body text, below the paragraph)
   await ed.locator("p", { hasText: "Mixed English" }).click();
+  await page.waitForTimeout(150);
   await page.keyboard.press("End");
   await page.getByTestId("ins-image").click();
   await page.getByLabel("image file").setInputFiles(imgPath);
@@ -137,6 +150,28 @@ try {
     assert(size > 5000, `${fmt} export non-trivial (${size} bytes)`);
     log(`exported ${fmt} (${size} bytes)`);
   }
+  {
+    const [dl] = await Promise.all([page.waitForEvent("download"), page.getByTestId("export-odt").click()]);
+    await dl.saveAs(path.join(OUT, "report.odt"));
+    log(`exported odt (${fs.statSync(path.join(OUT, "report.odt")).size} bytes)`);
+  }
+  // multi-page (side-by-side real pages)
+  await page.getByTestId("tab-view").click();
+  await page.getByRole("button", { name: "صفحات متعددة" }).click();
+  await page.getByTestId("multi-pages").locator("img").first().waitFor({ timeout: 20000 });
+  const thumbs = await page.getByTestId("multi-pages").locator("img").count();
+  assert(thumbs >= 4, "multi-page view shows rendered pages: " + thumbs);
+  await page.screenshot({ path: path.join(OUT, "05-multipage.png") });
+  log(`multi-page view: ${thumbs} pages side by side`);
+  await page.getByTestId("multi-pages").locator("button").first().click();
+  await page.getByTestId("editor").waitFor();
+  // similarity check
+  await page.getByTestId("tab-review").click();
+  await page.getByRole("button", { name: "جودة الكتابة" }).click();
+  await page.getByRole("button", { name: "فحص التشابه مع مصادري وتقاريري" }).click();
+  await page.getByTestId("similarity").getByText("تطابق").waitFor();
+  log("similarity check ran");
+  await page.getByTestId("tab-file").click();
   // 10. print preview
   await page.getByTestId("btn-print").click();
   await page.getByTestId("print-preview").waitFor();

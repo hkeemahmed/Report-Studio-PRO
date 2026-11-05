@@ -98,3 +98,16 @@ def test_review_checks(client, user):
     types = {i["type"] for i in r["issues"]}
     assert {"repeated_word", "double_space", "space_before_punctuation", "missing_section", "empty_section"} <= types
     assert 0 <= r["score"] < 10 and "Plagiarism" in r["note"]
+
+
+def test_similarity_against_own_corpus(client, user):
+    h = user["headers"]
+    src = "تعلم الآلة هو فرع من فروع الذكاء الاصطناعي يهتم ببناء أنظمة قادرة على التعلم من البيانات وتحسين أدائها مع الوقت"
+    client.post("/assets", files={"file": ("ml.txt", src.encode(), "text/plain")}, data={"kind": "source"}, headers=h)
+    body = {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "مقدمة خاصة بي. " + src + " ثم خاتمة مختلفة تماماً عن المصدر."}]}]}
+    d = client.post("/documents", json={"title": "s", "content": body}, headers=h).json()
+    r = client.get(f"/documents/{d['id']}/similarity", headers=h).json()
+    assert r["matches"][0]["title"] == "ml.txt" and 50 < r["overall_percent"] < 100
+    assert "تعلم الآلة هو فرع" in r["matches"][0]["passages"][0]
+    clean = client.post("/documents", json={"title": "c", "content": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "نص أصلي لا يشبه أي شيء آخر في هذه المساحة على الإطلاق هنا"}]}]}}, headers=h).json()
+    assert client.get(f"/documents/{clean['id']}/similarity", headers=h).json()["overall_percent"] == 0

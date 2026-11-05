@@ -234,7 +234,9 @@ class Export(Base):
     format: Mapped[str] = mapped_column(String(16))
     document_version: Mapped[int] = mapped_column(Integer)
     size_bytes: Mapped[int] = mapped_column(Integer, default=0)
-    status: Mapped[str] = mapped_column(String(16), default="done")
+    status: Mapped[str] = mapped_column(String(16), default="done")  # queued / running / done / error
+    storage_key: Mapped[str] = mapped_column(String(500), default="")
+    error: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now)
 
 

@@ -57,3 +57,13 @@ def test_auth_rate_limit(client):
 def test_swagger_available(client):
     assert client.get("/docs").status_code == 200
     assert "/documents/{doc_id}" in client.get("/openapi.json").json()["paths"]
+
+
+def test_rate_limited_responses_keep_cors_headers(client):
+    hdr = {"Origin": "http://localhost:5173"}
+    codes = []
+    for _ in range(12):
+        r = client.post("/auth/login", json={"email": "x@y.com", "password": "abc12345"}, headers=hdr)
+        codes.append(r.status_code)
+        assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+    assert 429 in codes and r.headers.get("retry-after") == "60"

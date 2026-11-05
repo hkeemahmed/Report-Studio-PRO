@@ -5,7 +5,11 @@ from sqlalchemy.orm import Session
 
 from ..models import Template, TemplateStyle
 
-TEMPLATES_JSON = Path(__file__).resolve().parents[3] / "packages" / "template-engine" / "templates.json"
+import sys
+
+# In the frozen desktop sidecar (PyInstaller) data files live under sys._MEIPASS
+_ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[3]))
+TEMPLATES_JSON = _ROOT / "packages" / "template-engine" / "templates.json"
 
 
 def seed_builtin_templates(db: Session):

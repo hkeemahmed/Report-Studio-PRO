@@ -1,0 +1,49 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_USER: rsp, POSTGRES_PASSWORD: rsp, POSTGRES_DB: rsp_test }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r backend/requirements.txt "psycopg[binary]"
+      - name: Tests (SQLite)
+        working-directory: backend
+        run: python -m pytest -q
+      - name: Tests (PostgreSQL + pgvector)
+        working-directory: backend
+        env: { RSP_TEST_DATABASE_URL: "postgresql+psycopg://rsp:rsp@localhost/rsp_test" }
+        run: python -m pytest -q
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm }
+      - run: npm ci
+      - run: npm run typecheck -w @rsp/web
+      - run: npm test -w @rsp/web
+      - run: npm run build -w @rsp/web
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22", cache: npm }
+      - run: pip install -r backend/requirements.txt && npm ci && npx playwright install --with-deps chromium && npm run build -w @rsp/web
+      - name: Run success-criterion E2E
+        run: |
+          (cd backend && RSP_JWT_SECRET=ci-secret-0123456789abcdef uvicorn app.main:app --port 8000 &)
+          (cd apps/web && npx vite preview --port 5173 --strictPort &)
+          sleep 8
+          node tests/e2e/success-criterion.e2e.mjs e2e-out
+          python tests/e2e/verify_exports.py e2e-out

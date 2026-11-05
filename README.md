@@ -34,9 +34,17 @@ cd docker && docker compose --env-file ../.env up --build
 
 Build on Windows with Rust + the Tauri prerequisites installed:
 
+**Easiest:** push the repo to GitHub, open **Actions → Windows installer → Run workflow**, and download the `.exe`/`.msi`
+artifact. Or build on a Windows PC with Python, Node and Rust installed:
+
 ```bash
-pip install pyinstaller && npm run build:backend -w @rsp/desktop
-npm run desktop:build           # produces NSIS/MSI installers in apps/desktop/src-tauri/target/release/bundle
+pip install -r backend/requirements.txt pyinstaller
+```
+```bash
+python backend/build_sidecar.py
+```
+```bash
+npm ci && cd apps/desktop && npx tauri build --bundles nsis,msi
 ```
 
 The desktop app bundles the backend as a local sidecar (`127.0.0.1:8765`, SQLite in `%APPDATA%\ReportStudioPRO`),
@@ -45,7 +53,7 @@ so editing, export and local Ollama work without internet.
 ## Tests
 
 ```bash
-cd backend && python -m pytest -q                 # 40 API/export/AI/sync/security tests (SQLite)
+cd backend && python -m pytest -q                 # 46 API/export/AI/sync/security tests (SQLite)
 RSP_TEST_DATABASE_URL=postgresql+psycopg://user:pw@localhost/rsp_test python -m pytest -q   # same suite on PostgreSQL
 npm test -w @rsp/web                              # 21 editor/layout/sync/template unit tests
 # end-to-end (backend on :8000, `npx vite preview` on :5173):

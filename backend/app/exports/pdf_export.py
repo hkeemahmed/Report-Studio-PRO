@@ -47,6 +47,7 @@ class Tok:
     size: float | None = None
     sup: bool = False
     link: str | None = None
+    fn: int = 0  # footnote number carried by this token (for per-page footnote placement)
 
     @property
     def font(self):
@@ -140,6 +141,8 @@ class BidiParagraph(Flowable):
                 bx = self.width - self.indent + 4 if self.rtl else self.indent - 12
                 c.drawString(bx, y, self.bullet)
             for (t, g), s, w in zip(glyphs, sizes, widths):
+                if t.fn and hasattr(c, "_rsp_fn_pages"):
+                    c._rsp_fn_pages[t.fn] = c.getPageNumber()
                 yy = y + (s * 0.6 if t.sup else 0)
                 if t.highlight:
                     c.setFillColor(_color(t.highlight, HexColor("#fde68a")))
@@ -203,7 +206,8 @@ class PdfExporter:
             elif t == "citation":
                 out.append(Tok(self.ctx.cite(n.get("attrs") or {})))
             elif t == "footnote":
-                out.append(Tok(str(self.ctx.add_footnote((n.get("attrs") or {}).get("text", ""))), sup=True))
+                num = self.ctx.add_footnote((n.get("attrs") or {}).get("text", ""))
+                out.append(Tok(str(num), sup=True, fn=num))
             elif t == "inlineEquation":
                 out.append(Tok((n.get("attrs") or {}).get("latex", ""), italic=True))
         return out
@@ -405,7 +409,10 @@ class PdfExporter:
             canv.rect(10 * mm, 10 * mm, self.page_w - 20 * mm, self.page_h - 20 * mm)
         canv.restoreState()
 
-    def render(self) -> bytes:
+    def _build(self, reserve: dict[int, float]) -> tuple[bytes, dict[int, int]]:
+        """One layout pass. `reserve` = points to keep free at the bottom of each page for its footnotes."""
+        self.ctx.footnotes.clear()
+        self.ctx._fig_i = self.ctx._tab_i = 0
         buf = io.BytesIO()
         doc = BaseDocTemplate(buf, pagesize=(self.page_w, self.page_h), title=self.ctx.title,
                               author=self.ctx.metadata.get("author", ""), leftMargin=self.margins["left"],
@@ -413,16 +420,33 @@ class PdfExporter:
                               bottomMargin=self.margins["bottom"])
         cols = max(1, int(self.lay.get("columns", 1)))
         gap = 6 * mm
-        fw = (self.frame_w - gap * (cols - 1)) / cols
+        full_w = self.page_w - self.margins["left"] - self.margins["right"]
+        fw = (full_w - gap * (cols - 1)) / cols
+        frame_h = self.page_h - self.margins["top"] - self.margins["bottom"]
         frames = []
         for i in range(cols):
             idx = cols - 1 - i if self.ctx.rtl else i  # RTL columns flow right-to-left
-            frames.append(Frame(self.margins["left"] + idx * (fw + gap), self.margins["bottom"], fw,
-                                self.page_h - self.margins["top"] - self.margins["bottom"], id=f"c{i}",
+            frames.append(Frame(self.margins["left"] + idx * (fw + gap), self.margins["bottom"], fw, frame_h, id=f"c{i}",
                                 leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0))
-        if cols > 1:
-            self.frame_w = fw
-        doc.addPageTemplates([PageTemplate(id="main", frames=frames, onPage=self._draw_hf)])
+        self.frame_w = fw
+
+        def on_page(canv, d):
+            canv._rsp_fn_pages = fn_pages
+            r = reserve.get(canv.getPageNumber(), 0)
+            for f in frames:  # shrink the frame to leave room for this page's footnotes
+                f._y1 = self.margins["bottom"] + r
+                f._height = frame_h - r
+                f._geom()
+            self._draw_hf(canv, d)
+
+        def on_page_end(canv, d):
+            page = canv.getPageNumber()
+            nums = sorted(n for n, pg in fn_pages.items() if pg == page)
+            if nums:
+                self._draw_footnotes(canv, nums)
+
+        fn_pages: dict[int, int] = {}
+        doc.addPageTemplates([PageTemplate(id="main", frames=frames, onPage=on_page, onPageEnd=on_page_end)])
         story = []
         blocks = self.ctx.content.get("content", [])
         for i, n in enumerate(blocks):
@@ -431,15 +455,44 @@ class PdfExporter:
             if n.get("type") == "paragraph" and not node_text(n).strip() and nxt in (None, "pageBreak"):
                 continue
             self.block(n, story)
-        if self.ctx.footnotes:
-            story.append(Spacer(1, 10))
-            story.append(self.text_para(self.ctx.L["notes"], size=15, bold=True, color=self.heading_color))
-            for i, f in enumerate(self.ctx.footnotes, 1):
-                story.append(self.text_para(f"{i}. {f}", size=self.size * 0.85))
         if not story:
             story.append(Spacer(1, 1))
         doc.build(story)
-        return buf.getvalue()
+        return buf.getvalue(), fn_pages
+
+    def _note_paras(self, nums):
+        return [self.text_para(f"{n}. {self.ctx.footnotes[n - 1]}", size=self.size * 0.75, space_after=1) for n in nums]
+
+    def _notes_height(self, nums) -> float:
+        return sum(p.wrap(self.page_w - self.margins["left"] - self.margins["right"], 1000)[1] for p in self._note_paras(nums)) + 10
+
+    def _draw_footnotes(self, canv, nums):
+        w = self.page_w - self.margins["left"] - self.margins["right"]
+        y = self.margins["bottom"] + self._notes_height(nums) - 4
+        canv.saveState()
+        canv.setStrokeColor(HexColor("#64748b")); canv.setLineWidth(0.5)
+        x0 = self.page_w - self.margins["right"] - w / 3 if self.ctx.rtl else self.margins["left"]
+        canv.line(x0, y, x0 + w / 3, y)
+        y -= 4
+        for p in self._note_paras(nums):
+            _, h = p.wrap(w, 1000)
+            y -= h
+            p.drawOn(canv, self.margins["left"], y)
+        canv.restoreState()
+
+    def render(self) -> bytes:
+        reserve: dict[int, float] = {}
+        data, fn_pages = self._build(reserve)
+        for _ in range(4):  # re-layout until every footnote sits on the page that references it
+            by_page: dict[int, list[int]] = {}
+            for n, pg in fn_pages.items():
+                by_page.setdefault(pg, []).append(n)
+            new = {pg: self._notes_height(sorted(ns)) for pg, ns in by_page.items()}
+            if new == reserve:
+                break
+            reserve = new
+            data, fn_pages = self._build(reserve)
+        return data
 
 
 def _roman(n: int) -> str:

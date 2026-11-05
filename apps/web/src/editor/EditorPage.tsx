@@ -18,6 +18,30 @@ import AISidebar, { AIResultPanel, EDITOR_ACTIONS, type PendingResult } from "./
 import { ChartDialog, CitationDialog, CoverDialog, CropDialog, EquationDialog, FindReplace, FootnoteDialog, HeaderFooterDialog, ImageDialog,
   LinkDialog, PageSetupDialog, ShapeDialog, TableDialog, type DialogKind } from "./dialogs";
 
+/** Side-by-side pages rendered by the real layout engine (exactly what prints / exports to PDF). */
+function MultiPageView({ docId, getContent, layout, zoom, onOpen, lang }: { docId: string; getContent: () => any; layout: PageLayout;
+  zoom: number; onOpen: () => void; lang: string }) {
+  const [pages, setPages] = useState<string[] | null>(null);
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    let live = true;
+    setPages(null);
+    api.pageImages(docId, getContent(), layout, 0.5).then((r) => live && setPages(r.pages)).catch((e) => live && setErr(errorMessage(e)));
+    return () => { live = false; };
+  }, [docId, layout]);
+  if (err) return <p className="p-6 text-danger">{err}</p>;
+  if (!pages) return <div className="flex h-full items-center justify-center"><Spinner className="h-8 w-8" /></div>;
+  return (
+    <div className="flex flex-wrap content-start justify-center gap-6 p-6" data-testid="multi-pages" dir={lang === "ar" ? "rtl" : "ltr"}>
+      {pages.map((src, i) => (
+        <button key={i} onClick={onOpen} className="flex flex-col items-center gap-1" title={lang === "ar" ? "فتح في المحرر" : "Open in editor"}>
+          <img src={src} alt={`page ${i + 1}`} className="bg-white shadow-page" style={{ width: 260 * zoom }} />
+          <span className="text-xs text-slate-500">{i + 1}</span>
+        </button>))}
+    </div>
+  );
+}
+
 type SaveState = "saved" | "saving" | "unsaved" | "offline" | "conflict" | "error";
 
 export default function EditorPage() {
@@ -196,7 +220,7 @@ export default function EditorPage() {
   const text = plainText(editor.getJSON() as any);
   const words = countWords(text);
   const Back = lang === "ar" ? ArrowRight : ArrowLeft;
-  const effZoom = multi ? Math.min(zoom, 0.5) : zoom;
+  const effZoom = zoom;
   const stateBadge = { saved: <><Check className="h-3.5 w-3.5" />{t("saved")}</>, saving: <><Loader2 className="h-3.5 w-3.5 animate-spin" />{t("saving")}</>,
     unsaved: <>{t("unsaved")}</>, offline: <><CloudOff className="h-3.5 w-3.5" />{t("offline")}</>, conflict: <><AlertTriangle className="h-3.5 w-3.5" />{t("conflict")}</>,
     error: <><AlertTriangle className="h-3.5 w-3.5" />Error</> }[saveState];
@@ -233,8 +257,13 @@ export default function EditorPage() {
           <SidePanel editor={editor} docId={doc.id} tab={panel} setTab={setPanel} lang={lang} newComment={newComment} onRestored={load} /></aside>}
         <div className="rsp-canvas relative" onClick={(e) => { if (e.target === e.currentTarget) editor.commands.focus("end"); }}>
           {d.kind === "find" && <FindReplace editor={editor} onClose={close} replaceMode={d.payload?.replace !== false} />}
-          {ruler && <Ruler layout={layout} zoom={effZoom} onChange={setLayout} />}
-          <Canvas editor={editor} layout={layout} zoom={effZoom} title={title} spell={spell} lang={doc.language} onPages={setPages} />
+          {multi && <MultiPageView docId={doc.id} getContent={() => editor.getJSON()} layout={layout} zoom={zoom}
+              onOpen={() => setMulti(false)} lang={lang} />}
+          {/* the editor stays mounted (hidden) so ProseMirror's DOM is never torn down under React */}
+          <div style={{ display: multi ? "none" : undefined }}>
+            {ruler && <Ruler layout={layout} zoom={effZoom} onChange={setLayout} />}
+            <Canvas editor={editor} layout={layout} zoom={effZoom} title={title} spell={spell} lang={doc.language} onPages={setPages} />
+          </div>
           <BubbleMenu editor={editor} tippyOptions={{ duration: 120, placement: "top" }} shouldShow={({ state }) => !state.selection.empty && state.selection.constructor.name === "TextSelection"}>
             <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-navy-700 dark:bg-navy-800"
               onMouseDown={(ev) => { if ((ev.target as HTMLElement).closest("button")) ev.preventDefault(); }}>

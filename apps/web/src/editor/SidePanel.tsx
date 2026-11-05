@@ -109,7 +109,27 @@ function Review({ docId, editor }: { docId: string; editor: Editor }) {
             onClick={() => { if (i.text && i.type !== "missing_section") { editor.commands.setSearchTerm(i.text.trim().slice(0, 60)); editor.commands.nextMatch(); } }}>
             <Badge color={i.severity === "warning" ? "amber" : "slate"}>{L(...(label[i.type] || [i.type, i.type]))}</Badge>
             <div className="mt-1 truncate text-xs" dir="auto">{i.text}{i.suggestion ? ` → ${i.suggestion}` : ""}</div></button>))}
-        <p className="text-[11px] text-slate-500">{L("فحوص قائمة على القواعد. لا يتم كشف الانتحال لأنه يتطلب خدمة متخصصة.", r.note)}</p>
+        <p className="text-[11px] text-slate-500">{L("فحوص قائمة على القواعد.", "Rule-based checks.")}</p>
+      </>}
+      <Similarity docId={docId} />
+    </div>
+  );
+}
+
+function Similarity({ docId }: { docId: string }) {
+  const [r, setR] = useState<any>(null);
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="space-y-2 border-t pt-3 dark:border-navy-700" data-testid="similarity">
+      <Button size="sm" variant="secondary" loading={busy} onClick={async () => { setBusy(true); try { setR(await api.similarity(docId)); } finally { setBusy(false); } }}>
+        {L("فحص التشابه مع مصادري وتقاريري", "Similarity vs my sources & reports")}</Button>
+      {r && <>
+        <div className="text-lg font-bold">{r.overall_percent}% <span className="text-xs font-normal text-slate-500">{L("تطابق", "overlap")} · {r.checked_sources} {L("مصدر", "sources")}</span></div>
+        {r.matches.map((m: any) => (
+          <details key={m.source_id} className="rounded border p-2 text-xs dark:border-navy-700"><summary><b>{m.percent}%</b> {m.title}</summary>
+            {m.passages.map((p: string, i: number) => <p key={i} className="mt-1 text-slate-500" dir="auto">«{p}»</p>)}</details>))}
+        <p className="text-[11px] text-slate-500">{L("المقارنة مع ملفاتك وتقارير مساحة العمل فقط، وليست فحص انتحال عبر الإنترنت.",
+          "Compared with your files and workspace reports only — not an internet plagiarism check.")}</p>
       </>}
     </div>
   );

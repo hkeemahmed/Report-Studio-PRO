@@ -76,6 +76,7 @@ export default function Ribbon(p: RibbonProps) {
           <Group label={L("تصدير", "Export")}>
             <Big icon={<FileDown className="h-5 w-5 text-red-600" />} label="PDF" onClick={() => p.file.exportAs("pdf")} testId="export-pdf" />
             <Big icon={<FileText className="h-5 w-5 text-blue-600" />} label="Word" onClick={() => p.file.exportAs("docx")} testId="export-docx" />
+            <Big icon={<FileText className="h-5 w-5 text-sky-600" />} label="ODT" onClick={() => p.file.exportAs("odt")} testId="export-odt" />
             <Big icon={<Code className="h-5 w-5" />} label="HTML" onClick={() => p.file.exportAs("html")} />
             <Big icon={<Download className="h-5 w-5" />} label="Markdown" onClick={() => p.file.exportAs("md")} />
             <Big icon={<Download className="h-5 w-5" />} label="TXT" onClick={() => p.file.exportAs("txt")} />

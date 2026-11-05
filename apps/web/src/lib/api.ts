@@ -12,7 +12,10 @@ const TOKENS = "rsp.tokens";
 type Tokens = { access_token: string; refresh_token: string };
 
 export function apiBase(): string {
-  return (localStorage.getItem("rsp.apiUrl") || (import.meta as any).env?.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
+  // Desktop (Tauri): talk to the bundled local backend sidecar by default
+  const desktop = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+  const fallback = desktop ? "http://127.0.0.1:8765" : (import.meta as any).env?.VITE_API_URL || "http://localhost:8000";
+  return (localStorage.getItem("rsp.apiUrl") || fallback).replace(/\/$/, "");
 }
 
 export class ApiClient {
@@ -102,6 +105,7 @@ export class ApiClient {
   addComment = (id: string, body: string, anchor_text: string) => this.req<any>(`/documents/${id}/comments`, "POST", { body, anchor_text });
   resolveComment = (id: string, cid: string, resolved: boolean) => this.req<any>(`/documents/${id}/comments/${cid}?resolved=${resolved}`, "PUT");
   deleteComment = (id: string, cid: string) => this.req(`/documents/${id}/comments/${cid}`, "DELETE");
+  similarity = (id: string) => this.req<any>(`/documents/${id}/similarity`);
   review = (id: string) => this.req<any>(`/documents/${id}/review`);
   // templates
   templates = () => this.req<TemplateDef[]>("/templates");
@@ -139,6 +143,8 @@ export class ApiClient {
     const r = await this.raw(`/exports/${fmt}`, { method: "POST", body: JSON.stringify({ document_id, content, layout }) });
     return r.blob();
   }
+  pageImages = (document_id: string, content?: any, layout?: any, scale = 0.6) =>
+    this.req<{ count: number; pages: string[] }>(`/exports/pages?scale=${scale}`, "POST", { document_id, content, layout });
   // sync
   syncPush = (device_id: string, operations: any[]) => this.req<{ results: any[]; server_time: string }>("/sync/push", "POST", { device_id, operations });
   syncPull = (device_id: string, since?: string) => this.req<{ documents: ReportDocument[]; deleted: string[]; server_time: string }>("/sync/pull", "POST", { device_id, since });
@@ -148,6 +154,7 @@ export const api = new ApiClient();
 
 export function errorMessage(e: unknown): string {
   if (e instanceof ApiError) {
+    if (e.status === 429) return "طلبات كثيرة، حاول بعد دقيقة / Too many requests — try again in a minute";
     if (e.status === 422 && e.detail?.errors) return e.detail.errors.map((x: any) => `${(x.loc || []).slice(-1)[0]}: ${x.msg}`).join("; ");
     return e.message;
   }

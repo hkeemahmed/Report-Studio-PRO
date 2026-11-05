@@ -1,0 +1,16 @@
+{
+  "name": "report-studio-pro",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w @rsp/web",
+    "build": "npm run build -w @rsp/web",
+    "test": "npm run test -w @rsp/web && npm run test -w @rsp/editor-core",
+    "typecheck": "npm run typecheck -w @rsp/web",
+    "backend": "cd backend && uvicorn app.main:app --reload --port 8000",
+    "test:backend": "cd backend && python -m pytest -q",
+    "desktop:dev": "npm run tauri -w @rsp/desktop -- dev",
+    "desktop:build": "npm run tauri -w @rsp/desktop -- build"
+  }
+}

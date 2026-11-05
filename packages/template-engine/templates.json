@@ -1,0 +1,1166 @@
+[
+ {
+  "slug": "academic",
+  "category": "academic",
+  "name": "Academic Classic",
+  "name_ar": "أكاديمي كلاسيكي",
+  "structure": [
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "أهداف التقرير",
+    "en": "Objectives"
+   },
+   {
+    "ar": "الإطار النظري",
+    "en": "Literature Review"
+   },
+   {
+    "ar": "المنهجية",
+    "en": "Methodology"
+   },
+   {
+    "ar": "النتائج",
+    "en": "Results"
+   },
+   {
+    "ar": "المناقشة",
+    "en": "Discussion"
+   },
+   {
+    "ar": "الخاتمة",
+    "en": "Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Amiri",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#1e3a8a",
+   "citationStyle": "apa",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#1e3a8a",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#1e3a8a",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#1e3a8a",
+    "size": 17
+   },
+   "body": {
+    "font": "Amiri",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "apa",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "scientific",
+  "category": "scientific",
+  "name": "Scientific Paper",
+  "name_ar": "ورقة علمية",
+  "structure": [
+   {
+    "ar": "الملخص",
+    "en": "Abstract"
+   },
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "المواد والطرق",
+    "en": "Materials and Methods"
+   },
+   {
+    "ar": "النتائج",
+    "en": "Results"
+   },
+   {
+    "ar": "المناقشة",
+    "en": "Discussion"
+   },
+   {
+    "ar": "الاستنتاجات",
+    "en": "Conclusions"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Noto Naskh Arabic",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#0f766e",
+   "citationStyle": "vancouver",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#0f766e",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#0f766e",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#0f766e",
+    "size": 17
+   },
+   "body": {
+    "font": "Noto Naskh Arabic",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "vancouver",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "engineering",
+  "category": "engineering",
+  "name": "Engineering Report",
+  "name_ar": "تقرير هندسي",
+  "structure": [
+   {
+    "ar": "الملخص التنفيذي",
+    "en": "Executive Summary"
+   },
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "وصف المشكلة",
+    "en": "Problem Statement"
+   },
+   {
+    "ar": "التصميم",
+    "en": "Design"
+   },
+   {
+    "ar": "التنفيذ",
+    "en": "Implementation"
+   },
+   {
+    "ar": "الاختبار والتحقق",
+    "en": "Testing and Validation"
+   },
+   {
+    "ar": "الخاتمة",
+    "en": "Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Noto Sans Arabic",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#b45309",
+   "citationStyle": "ieee",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#b45309",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#b45309",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#b45309",
+    "size": 17
+   },
+   "body": {
+    "font": "Noto Sans Arabic",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "ieee",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "medical",
+  "category": "medical",
+  "name": "Medical Report",
+  "name_ar": "تقرير طبي",
+  "structure": [
+   {
+    "ar": "الملخص",
+    "en": "Abstract"
+   },
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "الخلفية السريرية",
+    "en": "Clinical Background"
+   },
+   {
+    "ar": "المرضى والطرق",
+    "en": "Patients and Methods"
+   },
+   {
+    "ar": "النتائج",
+    "en": "Results"
+   },
+   {
+    "ar": "المناقشة",
+    "en": "Discussion"
+   },
+   {
+    "ar": "التوصيات",
+    "en": "Recommendations"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Noto Naskh Arabic",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#be123c",
+   "citationStyle": "vancouver",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#be123c",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#be123c",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#be123c",
+    "size": 17
+   },
+   "body": {
+    "font": "Noto Naskh Arabic",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "vancouver",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "technical",
+  "category": "technical",
+  "name": "Technical Document",
+  "name_ar": "وثيقة تقنية",
+  "structure": [
+   {
+    "ar": "نظرة عامة",
+    "en": "Overview"
+   },
+   {
+    "ar": "المتطلبات",
+    "en": "Requirements"
+   },
+   {
+    "ar": "البنية",
+    "en": "Architecture"
+   },
+   {
+    "ar": "التفاصيل التقنية",
+    "en": "Technical Details"
+   },
+   {
+    "ar": "الخلاصة",
+    "en": "Summary"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Noto Sans Arabic",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#334155",
+   "citationStyle": "ieee",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#334155",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#334155",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#334155",
+    "size": 17
+   },
+   "body": {
+    "font": "Noto Sans Arabic",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "ieee",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "cybersecurity",
+  "category": "cybersecurity",
+  "name": "Cybersecurity Assessment",
+  "name_ar": "تقييم أمن سيبراني",
+  "structure": [
+   {
+    "ar": "الملخص التنفيذي",
+    "en": "Executive Summary"
+   },
+   {
+    "ar": "النطاق",
+    "en": "Scope"
+   },
+   {
+    "ar": "المنهجية",
+    "en": "Methodology"
+   },
+   {
+    "ar": "النتائج والثغرات",
+    "en": "Findings"
+   },
+   {
+    "ar": "تقييم المخاطر",
+    "en": "Risk Assessment"
+   },
+   {
+    "ar": "التوصيات",
+    "en": "Recommendations"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Cairo",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#7c3aed",
+   "citationStyle": "ieee",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#7c3aed",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#7c3aed",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#7c3aed",
+    "size": 17
+   },
+   "body": {
+    "font": "Cairo",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "ieee",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "business",
+  "category": "business",
+  "name": "Business Report",
+  "name_ar": "تقرير أعمال",
+  "structure": [
+   {
+    "ar": "الملخص التنفيذي",
+    "en": "Executive Summary"
+   },
+   {
+    "ar": "تحليل السوق",
+    "en": "Market Analysis"
+   },
+   {
+    "ar": "الأداء",
+    "en": "Performance"
+   },
+   {
+    "ar": "الفرص والمخاطر",
+    "en": "Opportunities and Risks"
+   },
+   {
+    "ar": "التوصيات",
+    "en": "Recommendations"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Cairo",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#0369a1",
+   "citationStyle": "harvard",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#0369a1",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#0369a1",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#0369a1",
+    "size": 17
+   },
+   "body": {
+    "font": "Cairo",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "harvard",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "financial",
+  "category": "financial",
+  "name": "Financial Report",
+  "name_ar": "تقرير مالي",
+  "structure": [
+   {
+    "ar": "الملخص التنفيذي",
+    "en": "Executive Summary"
+   },
+   {
+    "ar": "القوائم المالية",
+    "en": "Financial Statements"
+   },
+   {
+    "ar": "تحليل النسب",
+    "en": "Ratio Analysis"
+   },
+   {
+    "ar": "التوقعات",
+    "en": "Forecast"
+   },
+   {
+    "ar": "الخلاصة",
+    "en": "Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Cairo",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#15803d",
+   "citationStyle": "harvard",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#15803d",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#15803d",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#15803d",
+    "size": 17
+   },
+   "body": {
+    "font": "Cairo",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "harvard",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "school",
+  "category": "school",
+  "name": "School Report",
+  "name_ar": "تقرير مدرسي",
+  "structure": [
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "الموضوع",
+    "en": "Main Topic"
+   },
+   {
+    "ar": "الخاتمة",
+    "en": "Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Cairo",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#2563eb",
+   "citationStyle": "apa",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#2563eb",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#2563eb",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#2563eb",
+    "size": 17
+   },
+   "body": {
+    "font": "Cairo",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "apa",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": false,
+  "includeBibliography": true
+ },
+ {
+  "slug": "research",
+  "category": "research",
+  "name": "Research Paper",
+  "name_ar": "بحث علمي",
+  "structure": [
+   {
+    "ar": "الملخص",
+    "en": "Abstract"
+   },
+   {
+    "ar": "المقدمة",
+    "en": "Introduction"
+   },
+   {
+    "ar": "مشكلة البحث",
+    "en": "Research Problem"
+   },
+   {
+    "ar": "الدراسات السابقة",
+    "en": "Previous Studies"
+   },
+   {
+    "ar": "المنهجية",
+    "en": "Methodology"
+   },
+   {
+    "ar": "النتائج",
+    "en": "Results"
+   },
+   {
+    "ar": "المناقشة",
+    "en": "Discussion"
+   },
+   {
+    "ar": "الخاتمة والتوصيات",
+    "en": "Conclusion and Recommendations"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Amiri",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#1e40af",
+   "citationStyle": "apa",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#1e40af",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#1e40af",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#1e40af",
+    "size": 17
+   },
+   "body": {
+    "font": "Amiri",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "apa",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "graduation",
+  "category": "graduation",
+  "name": "Graduation Project",
+  "name_ar": "مشروع تخرج",
+  "structure": [
+   {
+    "ar": "الإهداء",
+    "en": "Dedication"
+   },
+   {
+    "ar": "الشكر والتقدير",
+    "en": "Acknowledgements"
+   },
+   {
+    "ar": "الملخص",
+    "en": "Abstract"
+   },
+   {
+    "ar": "الفصل الأول: المقدمة",
+    "en": "Chapter 1: Introduction"
+   },
+   {
+    "ar": "الفصل الثاني: الدراسات السابقة",
+    "en": "Chapter 2: Literature Review"
+   },
+   {
+    "ar": "الفصل الثالث: التحليل والتصميم",
+    "en": "Chapter 3: Analysis and Design"
+   },
+   {
+    "ar": "الفصل الرابع: التنفيذ",
+    "en": "Chapter 4: Implementation"
+   },
+   {
+    "ar": "الفصل الخامس: النتائج والخاتمة",
+    "en": "Chapter 5: Results and Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Amiri",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#4338ca",
+   "citationStyle": "apa",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#4338ca",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#4338ca",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#4338ca",
+    "size": 17
+   },
+   "body": {
+    "font": "Amiri",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "apa",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ },
+ {
+  "slug": "laboratory",
+  "category": "laboratory",
+  "name": "Laboratory Report",
+  "name_ar": "تقرير مختبر",
+  "structure": [
+   {
+    "ar": "الهدف من التجربة",
+    "en": "Aim"
+   },
+   {
+    "ar": "النظرية",
+    "en": "Theory"
+   },
+   {
+    "ar": "الأدوات والمواد",
+    "en": "Apparatus and Materials"
+   },
+   {
+    "ar": "خطوات العمل",
+    "en": "Procedure"
+   },
+   {
+    "ar": "النتائج والحسابات",
+    "en": "Results and Calculations"
+   },
+   {
+    "ar": "المناقشة",
+    "en": "Discussion"
+   },
+   {
+    "ar": "مصادر الخطأ",
+    "en": "Sources of Error"
+   },
+   {
+    "ar": "الاستنتاج",
+    "en": "Conclusion"
+   }
+  ],
+  "layout": {
+   "pageSize": "A4",
+   "margins_mm": {
+    "top": 25,
+    "bottom": 25,
+    "left": 25,
+    "right": 25
+   },
+   "fontFamily": "Noto Naskh Arabic",
+   "fontSize": 14,
+   "lineHeight": 1.5,
+   "headingColor": "#0e7490",
+   "citationStyle": "apa",
+   "pageNumbers": {
+    "enabled": true,
+    "position": "footer",
+    "align": "center"
+   },
+   "header": {
+    "text": "{title}",
+    "align": "center"
+   },
+   "footer": {
+    "text": "",
+    "align": "center"
+   },
+   "differentFirstPage": true
+  },
+  "styles": {
+   "cover": {
+    "accent": "#0e7490",
+    "titleSize": 26
+   },
+   "heading1": {
+    "color": "#0e7490",
+    "size": 20
+   },
+   "heading2": {
+    "color": "#0e7490",
+    "size": 17
+   },
+   "body": {
+    "font": "Noto Naskh Arabic",
+    "size": 14
+   },
+   "table": {
+    "headerBg": "#dbeafe",
+    "border": "#64748b"
+   },
+   "caption": {
+    "size": 12,
+    "align": "center"
+   },
+   "image": {
+    "align": "center",
+    "maxWidth": "100%"
+   },
+   "references": {
+    "style": "apa",
+    "hangingIndent": true
+   }
+  },
+  "includeToc": true,
+  "includeBibliography": true
+ }
+]

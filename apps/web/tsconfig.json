@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2021", "lib": ["ES2022", "DOM", "DOM.Iterable"], "module": "ESNext", "moduleResolution": "bundler",
+    "jsx": "react-jsx", "strict": true, "noUnusedLocals": false, "skipLibCheck": true, "resolveJsonModule": true,
+    "esModuleInterop": true, "isolatedModules": true, "noEmit": true, "types": ["vite/client", "vitest/globals"],
+    "paths": {
+      "@rsp/shared-types": ["../../packages/shared-types/src"], "@rsp/document-schema": ["../../packages/document-schema/src"],
+      "@rsp/editor-core": ["../../packages/editor-core/src"], "@rsp/ui-components": ["../../packages/ui-components/src"],
+      "@rsp/template-engine": ["../../packages/template-engine/src"]
+    }
+  },
+  "include": ["src", "../../packages/*/src"]
+}

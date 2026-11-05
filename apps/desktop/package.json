@@ -1,0 +1,3 @@
+{ "name": "@rsp/desktop", "version": "1.0.0", "private": true,
+  "scripts": { "tauri": "tauri", "build:backend": "cd ../../backend && pyinstaller --onefile --name rsp-backend -p . desktop_entry.py --distpath ../apps/desktop/src-tauri/binaries" },
+  "devDependencies": { "@tauri-apps/cli": "^2" } }

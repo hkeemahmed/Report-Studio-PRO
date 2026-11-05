@@ -1,0 +1,11 @@
+node_modules/
+dist/
+storage/*
+!storage/.gitkeep
+.env
+__pycache__/
+.pytest_cache/
+*.db
+apps/desktop/src-tauri/target/
+apps/desktop/src-tauri/binaries/
+e2e-out/

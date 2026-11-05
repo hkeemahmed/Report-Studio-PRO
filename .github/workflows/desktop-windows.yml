@@ -1,9 +1,10 @@
 name: Windows installer
 # Builds the Report Studio PRO Windows installers (NSIS .exe + MSI) on a Windows runner.
-# Trigger manually (Actions → Windows installer → Run workflow) or by pushing a tag like v1.0.0.
+# Runs on every push to main, on tags like v1.0.0, or manually (Actions → Windows installer → Run workflow).
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     tags: ["v*"]
 
 jobs:
